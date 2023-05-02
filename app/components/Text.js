@@ -1,15 +1,11 @@
 import React from "react";
-import { StyleSheet, Text } from "react-native";
+import { Text } from "react-native";
 
-export default ({ children, style, fontSize = 18, ...otherProps }) =>
+import defaultStyles from "../config/styles";
+
+export default ({ children, style, ...otherProps }) =>
   children ? (
-    <Text style={[styles.text, style]} {...otherProps}>
+    <Text style={[defaultStyles.text, style]} {...otherProps}>
       {children}
     </Text>
   ) : null;
-
-const styles = StyleSheet.create({
-  text: {
-    fontSize: 18,
-  },
-});
