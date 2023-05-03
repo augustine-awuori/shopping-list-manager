@@ -18,6 +18,8 @@
     "react": "18.2.0",
     "react-native": "0.71.7",
     "react-native-gesture-handler": "^2.9.0",
+    "react-native-paper": "^5.7.2",
+    "react-native-tableview-simple": "^4.4.0",
     "yup": "^1.1.1"
   },
   "devDependencies": {

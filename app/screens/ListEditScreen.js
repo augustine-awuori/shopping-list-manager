@@ -12,7 +12,7 @@ import colors from "../config/colors";
 import Screen from "../components/Screen";
 
 const validationSchema = Yup.object().shape({
-  title: Yup.string().min(3).max(255).required().label("Title"),
+  title: Yup.string().min(3).max(255).required().label("Shopping list title"),
   shoppingCentre: Yup.string().min(3).max(255).label("The Shopping Centre"),
   budgetLimit: Yup.number().min(1).max(1_000_000).label("Budget Limit Amount"),
 });
@@ -33,14 +33,14 @@ export default () => {
         <FormField name="title" placeholder="Shopping List  Title" />
         <FormField
           name="shoppingCentre"
-          placeholder="Shopping Centre (optional)"
+          placeholder="Shopping Centre (Optional)"
         />
         <FormField
           autoCapitalize="words"
           keyboardType="numeric"
           maxLength={7}
           name="budgetLimit"
-          placeholder="Budget Limit Amount"
+          placeholder="Budget Limit Amount (Optional)"
         />
         <SubmitButton title="Create List" />
       </Form>
@@ -51,6 +51,6 @@ export default () => {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: colors.white,
-    padding: 25,
+    paddingHorizontal: 25,
   },
 });

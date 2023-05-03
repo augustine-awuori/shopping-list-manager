@@ -7,7 +7,12 @@ import ListItem from "../components/lists/ListItem";
 import Screen from "../components/Screen";
 import Text from "../components/Text";
 
-export default ({ lists = [] }) => {
+export default ({
+  lists = [
+    { title: "BAck to Sch", shoppingCentre: "Kisii Matt" },
+    { title: "NAkumatt", shoppingCentre: "Shivling" },
+  ],
+}) => {
   const Empty = () => (
     <Text style={styles.text}>You haven't created any shopping list yet!</Text>
   );
