@@ -2,7 +2,8 @@ import React from "react";
 import { StatusBar } from "expo-status-bar";
 import { StyleSheet } from "react-native";
 
-import ListItemEditScreen from "./app/screens/ListItemEditScreen";
+import ListItemEditScreen from "./app/screens/ListScreen";
+import Screen from "./app/components/Screen";
 
 export default function App() {
   return (

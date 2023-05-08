@@ -10,6 +10,7 @@ import Screen from "../components/Screen";
 import Table from "../components/Table2";
 import Text from "../components/Text";
 import useAlert from "../hooks/useAlert";
+import ProgressBar from "../components/ProgressBar";
 
 const titles = ["Name", "Unit Price", "Quantity", "Sum", ""];
 
@@ -22,6 +23,7 @@ const x = [
 export default () => {
   const [amount, setAmount] = useState(0);
   const [checkedAmount, setCheckedAmount] = useState(0);
+  const [checkedCount, setCheckedCount] = useState(0);
   const [isShopping, setIsShopping] = useState();
   const [data, setData] = useState(x);
   const { alert } = useAlert();
@@ -59,7 +61,11 @@ export default () => {
 
   const deleteItem = (listItem, itemIndex) => {
     setData([...data].filter((item, index) => index !== itemIndex));
-    updateCheckedAmount({ listItem });
+
+    if (listItem.checked) {
+      setCheckedAmount(amount - listItem.quantity * listItem.unitPrice);
+      setCheckedCount(checkedCount - 1);
+    }
   };
 
   const handleItemDelete = (item, index) =>
@@ -76,6 +82,7 @@ export default () => {
     const total = quantity * unitPrice;
 
     setCheckedAmount(checked ? amount + total : amount - total);
+    setCheckedCount(checked ? checkedCount + 1 : checkedCount - 1);
   };
 
   const handlePress = () => {
@@ -90,6 +97,11 @@ export default () => {
 
   return (
     <Screen>
+      <ProgressBar
+        progress={checkedCount / itemsCount}
+        style={styles.progressBar}
+        visible={checkedAmount && isShopping}
+      />
       <View style={styles.container}>
         <Text style={styles.title}>Back To Sch List</Text>
         <Table
