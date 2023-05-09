@@ -46,42 +46,43 @@ const categories = [
   },
 ];
 
-export default () => {
-  const handleSubmit = () => {};
+export default ({ navigation }) => {
+  const handleSubmit = () => {
+    navigation.goBack();
+  };
 
   return (
-    <Screen style={styles.screen}>
-      <Form
-        validationSchema={validationSchema}
-        initialValues={{ category: null, name: "", price: "", quantity: "" }}
-        onSubmit={handleSubmit}
-      >
-        <FormField name="name" placeholder="Name" width="95%" />
-        <FormField
-          name="quantity"
-          keyboardType="numeric"
-          placeholder="Quantity"
-          maxLength={1_000}
-          width="50%"
-        />
-        <FormField
-          name="price"
-          keyboardType="numeric"
-          placeholder="Price"
-          width="50%"
-          maxLength={10_000}
-        />
-        <FormPicker
-          icon="apps"
-          items={categories}
-          name="category"
-          numberOfColumns={3}
-          PickerItemComponent={CategoryPicker}
-          placeholder="Category"
-        />
-        <SubmitButton title="Add Item" />
-      </Form>
-    </Screen>
+    <Form
+      validationSchema={validationSchema}
+      initialValues={{ category: null, name: "", price: "", quantity: "" }}
+      onSubmit={handleSubmit}
+      style={styles.screen}
+    >
+      <FormField name="name" placeholder="Name" width="95%" />
+      <FormField
+        name="quantity"
+        keyboardType="numeric"
+        placeholder="Quantity"
+        maxLength={1_000}
+        width="50%"
+      />
+      <FormField
+        name="price"
+        keyboardType="numeric"
+        placeholder="Price"
+        width="50%"
+        maxLength={10_000}
+      />
+      <FormPicker
+        icon="apps"
+        items={categories}
+        name="category"
+        numberOfColumns={3}
+        PickerItemComponent={CategoryPicker}
+        placeholder="Category"
+      />
+      <SubmitButton title="Add Item" />
+    </Form>
   );
 };
 

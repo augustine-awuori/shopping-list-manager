@@ -1,16 +1,17 @@
 import React from "react";
-import { StatusBar } from "expo-status-bar";
 import { StyleSheet } from "react-native";
+import { StatusBar } from "expo-status-bar";
+import { NavigationContainer } from "@react-navigation/native";
 
-import ListItemEditScreen from "./app/screens/ListScreen";
-import Screen from "./app/components/Screen";
+import AppNavigator from "./app/navigation/AppNavigator";
+import theme from "./app/navigation/navigationTheme";
 
 export default function App() {
   return (
-    <>
-      <ListItemEditScreen />
+    <NavigationContainer theme={theme}>
+      <AppNavigator />
       <StatusBar style="auto" />
-    </>
+    </NavigationContainer>
   );
 }
 

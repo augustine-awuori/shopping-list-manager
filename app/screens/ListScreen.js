@@ -6,11 +6,11 @@ import BlockButton from "../components/BlockButton";
 import colors from "../config/colors";
 import FloatingButton from "../components/FloatingButton";
 import OutlineButton from "../components/BlockOutlineButton";
-import Screen from "../components/Screen";
 import Table from "../components/Table2";
 import Text from "../components/Text";
 import useAlert from "../hooks/useAlert";
 import ProgressBar from "../components/ProgressBar";
+import routes from "../navigation/routes";
 
 const titles = ["Name", "Unit Price", "Quantity", "Sum", ""];
 
@@ -20,7 +20,7 @@ const x = [
   { name: "Ruler", unitPrice: 20, quantity: 20 },
 ];
 
-export default () => {
+export default ({ navigation }) => {
   const [amount, setAmount] = useState(0);
   const [checkedAmount, setCheckedAmount] = useState(0);
   const [checkedCount, setCheckedCount] = useState(0);
@@ -43,10 +43,7 @@ export default () => {
   };
 
   const handleItemPress = (item, index) => {
-    if (!isShopping) {
-      console.log("Navigate to the list item edit screen");
-      return;
-    }
+    if (!isShopping) return navigation.navigate(routes.LIST_EDIT);
 
     const items = [...data];
     items[index].checked = !items[index].checked;
@@ -56,7 +53,7 @@ export default () => {
   };
 
   const addItem = () => {
-    console.log("Add item to this list. Navigate to list item edit screen");
+    navigation.navigate(routes.LIST_ITEM_EDIT);
   };
 
   const deleteItem = (listItem, itemIndex) => {
@@ -88,22 +85,21 @@ export default () => {
   const handlePress = () => {
     setIsShopping(!isShopping);
 
-    if (!isShopping) {
-      console.log("Navigate to the lists screen.");
+    if (isShopping) {
+      navigation.navigate(routes.LISTS);
     }
   };
 
   const Btn = isShopping ? OutlineButton : BlockButton;
 
   return (
-    <Screen>
+    <>
       <ProgressBar
         progress={checkedCount / itemsCount}
         style={styles.progressBar}
         visible={checkedAmount && isShopping}
       />
       <View style={styles.container}>
-        <Text style={styles.title}>Back To Sch List</Text>
         <Table
           data={data}
           isShopping={isShopping}
@@ -139,7 +135,7 @@ export default () => {
         ) : null}
         <FloatingButton visible onPress={addItem} />
       </View>
-    </Screen>
+    </>
   );
 };
 
@@ -154,7 +150,7 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    paddingHorizontal: 15,
+    paddingHorizontal: 10,
   },
   icon: {
     marginRight: 7,

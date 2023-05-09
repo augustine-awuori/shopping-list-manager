@@ -4,10 +4,11 @@ import { FlatList, StyleSheet } from "react-native";
 import FloatingButton from "../components/FloatingButton";
 import ItemSeparator from "../components/lists/ItemSeparator";
 import ListItem from "../components/lists/ListItem";
-import Screen from "../components/Screen";
+import routes from "../navigation/routes";
 import Text from "../components/Text";
 
 export default ({
+  navigation,
   lists = [
     { title: "BAck to Sch", shoppingCentre: "Kisii Matt" },
     { title: "NAkumatt", shoppingCentre: "Shivling" },
@@ -18,7 +19,7 @@ export default ({
   );
 
   return (
-    <Screen>
+    <>
       <FlatList
         data={lists}
         ItemSeparatorComponent={ItemSeparator}
@@ -27,15 +28,15 @@ export default ({
           <ListItem
             title={item.title}
             subTitle={item.shoppingCentre}
-            onPress={() => console.log("Navigate to list screen", item)}
+            onPress={() => navigation.navigate(routes.LIST, item)}
           />
         )}
       />
       <FloatingButton
-        onPress={() => console.log("Navigate to Create New List Screen")}
+        onPress={() => navigation.navigate(routes.LIST_EDIT)}
         width={65}
       />
-    </Screen>
+    </>
   );
 };
 
