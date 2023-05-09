@@ -133,7 +133,7 @@ export default ({ navigation }) => {
             />
           </>
         ) : null}
-        <FloatingButton visible onPress={addItem} />
+        <FloatingButton onPress={addItem} />
       </View>
     </>
   );

@@ -20,6 +20,7 @@ export default ({
     </DataTable.Header>
     {data.map((item, index) => (
       <DataTable.Row
+        key={index}
         onPress={() => onItemPress(item, index)}
         onLongPress={() => onItemLongPress(item, index)}
       >
