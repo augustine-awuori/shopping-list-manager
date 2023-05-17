@@ -6,71 +6,74 @@ import BlockButton from "../components/BlockButton";
 import colors from "../config/colors";
 import FloatingButton from "../components/FloatingButton";
 import OutlineButton from "../components/BlockOutlineButton";
-import Table from "../components/Table2";
-import Text from "../components/Text";
-import useAlert from "../hooks/useAlert";
 import ProgressBar from "../components/ProgressBar";
 import routes from "../navigation/routes";
-
-const titles = ["Name", "Unit Price", "Quantity", "Sum", ""];
-
-const x = [
-  { name: "Shoe Polish", unitPrice: 120, quantity: 3, checked: false },
-  { name: "Text Books", unitPrice: 2000, quantity: 2 },
-  { name: "Ruler", unitPrice: 20, quantity: 20 },
-];
+import Table from "../components/Table";
+import Text from "../components/Text";
+import useAlert from "../hooks/useAlert";
+import useShoppingListItems from "../hooks/useShoppingListItems";
+import useShoppingLists from "../hooks/useShoppingLists";
 
 export default ({ navigation }) => {
   const [amount, setAmount] = useState(0);
   const [checkedAmount, setCheckedAmount] = useState(0);
   const [checkedCount, setCheckedCount] = useState(0);
   const [isShopping, setIsShopping] = useState();
-  const [data, setData] = useState(x);
   const { alert } = useAlert();
+  const listItems = useShoppingListItems();
+  const { shoppingList: list, shoppingListItemsCount: itemsCount } =
+    useShoppingLists();
 
-  const itemsCount = data.length;
+  const budgetRemainder = list.budget - amount;
+
+  const tableHeaders = ["Title", "Unit Price", "Quantity", "Sum", ""];
+
+  const items = list?.items;
 
   useEffect(() => {
     initAmount();
-  }, [itemsCount]);
+  }, []);
 
   const initAmount = () => {
     let amount = 0;
 
-    data.forEach(({ quantity, unitPrice }) => (amount += quantity * unitPrice));
+    items.forEach(
+      ({ quantity, unitPrice }) => (amount += quantity * unitPrice)
+    );
 
     setAmount(amount);
   };
 
   const handleItemPress = (item, index) => {
-    if (!isShopping) return navigation.navigate(routes.LIST_EDIT);
+    if (!isShopping)
+      return navigation.navigate(routes.LIST_ITEM_EDIT, {
+        item,
+        listId: list.id,
+      });
 
-    const items = [...data];
-    items[index].checked = !items[index].checked;
+    const newItems = [...items];
+    newItems[index].checked = !newItems[index].checked;
 
-    setData(items);
+    listItems.save(newItems);
     updateCheckedAmount(item);
   };
 
-  const addItem = () => {
-    navigation.navigate(routes.LIST_ITEM_EDIT);
-  };
+  const deleteItem = (item) => {
+    listItems.save([...items].filter(({ id }) => id !== item.id));
+    listItems.remove(item, list.id);
 
-  const deleteItem = (listItem, itemIndex) => {
-    setData([...data].filter((item, index) => index !== itemIndex));
-
-    if (listItem.checked) {
-      setCheckedAmount(amount - listItem.quantity * listItem.unitPrice);
+    if (item.checked) {
+      setCheckedAmount(amount - item.quantity * item.unitPrice);
       setCheckedCount(checkedCount - 1);
     }
   };
 
-  const handleItemDelete = (item, index) =>
+  const handleItemDelete = (item) =>
     alert(
       "List Item Deletion",
       `Are you sure you want to permanently remove "${item.name.toLowerCase()} " from your list?`,
       "I'm sure",
-      () => deleteItem(item, index),
+      () => deleteItem(item),
       "Cancel"
     );
 
@@ -90,29 +93,44 @@ export default ({ navigation }) => {
     }
   };
 
+  const getProgress = () => {
+    const progress = checkedCount / itemsCount;
+
+    return checkedCount && itemsCount ? progress : 0;
+  };
+
   const Btn = isShopping ? OutlineButton : BlockButton;
+
+  const budgetTextStyle = {
+    color: budgetRemainder > 0 ? colors.success : colors.danger,
+  };
 
   return (
     <>
       <ProgressBar
-        progress={checkedCount / itemsCount}
+        progress={getProgress()}
         style={styles.progressBar}
         visible={checkedAmount && isShopping}
       />
       <View style={styles.container}>
         <Table
-          data={data}
+          data={list.items}
           isShopping={isShopping}
           onItemLongPress={handleItemDelete}
           onItemPress={handleItemPress}
           style={styles.table}
-          titles={titles}
+          titles={tableHeaders}
         />
-        {data.length ? (
+        {list?.items?.length ? (
           <>
             <View style={styles.textContainer}>
               <Text style={styles.amountText}>Total = {amount}</Text>
-              {isShopping && (
+              {list.budget ? (
+                <Text style={budgetTextStyle}>
+                  Budget = {list.budget - amount}
+                </Text>
+              ) : null}
+              {isShopping && checkedAmount ? (
                 <View style={styles.tickedContainer}>
                   <Icon
                     color={colors.primary}
@@ -124,7 +142,7 @@ export default ({ navigation }) => {
                     Ticked = {checkedAmount}
                   </Text>
                 </View>
-              )}
+              ) : null}
             </View>
             <Btn
               onPress={handlePress}
@@ -133,7 +151,9 @@ export default ({ navigation }) => {
             />
           </>
         ) : null}
-        <FloatingButton onPress={addItem} />
+        <FloatingButton
+          onPress={() => navigation.navigate(routes.LIST_ITEM_EDIT, list.id)}
+        />
       </View>
     </>
   );
@@ -142,7 +162,6 @@ export default ({ navigation }) => {
 const styles = StyleSheet.create({
   amountText: {
     color: colors.primary,
-    marginBottom: 10,
     textAlign: "center",
   },
   button: {
@@ -154,7 +173,6 @@ const styles = StyleSheet.create({
   },
   icon: {
     marginRight: 7,
-    bottom: 5,
   },
   progressBar: {
     marginBottom: 5,
@@ -165,6 +183,7 @@ const styles = StyleSheet.create({
   textContainer: {
     flexDirection: "row",
     justifyContent: "space-around",
+    marginBottom: 10,
   },
   tickedContainer: {
     alignItems: "center",

@@ -32,7 +32,7 @@ export default function ListItem({
                 {title}
               </Text>
               {subTitle && (
-                <Text style={styles.subtitle} numberOfLines={2}>
+                <Text style={styles.subTitle} numberOfLines={2}>
                   {subTitle}
                 </Text>
               )}

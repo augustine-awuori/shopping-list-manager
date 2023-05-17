@@ -2,27 +2,20 @@ import React, { useState } from "react";
 import { FlatList, StyleSheet } from "react-native";
 
 import { ListItem, ListItemAction } from "../components/lists";
-import FloatingButton from "../components/FloatingButton";
+import Button from "../components/FloatingButton";
+import colors from "../config/colors";
 import ItemSeparator from "../components/lists/ItemSeparator";
 import routes from "../navigation/routes";
 import Text from "../components/Text";
-import colors from "../config/colors";
-
-const data = [
-  { title: "BAck to Sch List", shoppingCentre: "Kisii Matt" },
-  { title: "NAkumatt", shoppingCentre: "Shivling" },
-];
+import useShoppingLists from "../hooks/useShoppingLists";
 
 export default ({ navigation }) => {
-  const [lists, setLists] = useState(data);
   const [refreshing, setRefreshing] = useState(false);
-
-  const handleDelete = (listIndex) =>
-    setLists([...lists].filter((list, index) => index !== listIndex));
+  const shoppingLists = useShoppingLists();
 
   const handleRefresh = () => {
     setRefreshing(true);
-    setLists([...lists, { title: "New Mom", shoppingCentre: "Naivas" }]);
+    shoppingLists.init();
     setRefreshing(false);
   };
 
@@ -30,33 +23,43 @@ export default ({ navigation }) => {
     <Text style={styles.text}>You haven't created any shopping list yet!</Text>
   );
 
+  const rightAction = (list) => (
+    <ListItemAction onPress={() => shoppingLists.remove(list)} />
+  );
+
+  const leftAction = (item) => (
+    <ListItemAction
+      name="pencil"
+      onPress={() => navigation.navigate(routes.LIST_EDIT, item)}
+      style={styles.leftActionItem}
+    />
+  );
+
+  const viewDetails = ({ id, title }) => {
+    shoppingLists.setShoppingListById(id);
+    navigation.navigate(routes.LIST_DETAILS, { title });
+  };
+
   return (
     <>
       <FlatList
-        data={lists}
+        data={shoppingLists.data}
+        keyExtractor={(item, index) => index.toString()}
         ItemSeparatorComponent={ItemSeparator}
         ListEmptyComponent={Empty}
         refreshing={refreshing}
         onRefresh={handleRefresh}
-        renderItem={({ item, index }) => (
+        renderItem={({ item }) => (
           <ListItem
-            title={item.title}
+            onPress={() => viewDetails(item)}
+            renderLeftActions={() => leftAction(item)}
+            renderRightActions={() => rightAction(item)}
             subTitle={item.shoppingCentre}
-            onPress={() => navigation.navigate(routes.LIST, item)}
-            renderRightActions={() => (
-              <ListItemAction onPress={() => handleDelete(index)} />
-            )}
-            renderLeftActions={() => (
-              <ListItemAction
-                onPress={() => navigation.navigate(routes.LIST_EDIT, item)}
-                name="pencil"
-                style={styles.leftActionItem}
-              />
-            )}
+            title={item.title}
           />
         )}
       />
-      <FloatingButton
+      <Button
         onPress={() => navigation.navigate(routes.LIST_EDIT)}
         width={65}
       />
@@ -65,7 +68,6 @@ export default ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  container: {},
   leftActionItem: {
     backgroundColor: colors.primary,
   },
