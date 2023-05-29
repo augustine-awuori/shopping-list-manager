@@ -11,7 +11,7 @@ export default () => {
 
     list.items.push(map(item));
 
-    await syncList(list);
+    syncList(list);
   };
 
   const remove = (item, listId) => askBeforeRemoval(item, listId);
@@ -41,7 +41,7 @@ export default () => {
 
     list.items = list.items.filter(({ id }) => id !== item.id);
 
-    await syncList(list);
+    syncList(list);
   };
 
   const update = async (item, listId) => {
@@ -49,7 +49,7 @@ export default () => {
 
     list.items = list.items.map((i) => (i.id === item.id ? item : i));
 
-    await syncList(list);
+    syncList(list);
   };
 
   const map = ({ category, name, unitPrice, quantity }) => ({
@@ -60,14 +60,14 @@ export default () => {
     quantity,
   });
 
-  async function syncList(list) {
+  function syncList(list) {
     list.lastUpdate = time.now();
 
-    await lists.save(list);
+    lists.save(list);
   }
 
   async function save(items) {
-    await syncList({ ...lists.shoppingList, items });
+    syncList({ ...lists.shoppingList, items });
   }
 
   return { add, remove, save, update };

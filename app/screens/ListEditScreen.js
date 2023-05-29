@@ -36,7 +36,7 @@ export default ({ navigation, route }) => {
     setError("");
     setLoading(true);
     const { data, ok } = editedList
-      ? await shoppingList.save({ ...editedList, list })
+      ? await shoppingList.save({ ...editedList, ...list })
       : await shoppingList.add(list);
     setLoading(false);
 

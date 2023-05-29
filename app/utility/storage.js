@@ -11,18 +11,16 @@ async function add(list) {
 
     return { ok: true };
   } catch (error) {
-    const errorMessage = "Error storing a shopping list";
-    console.log(errorMessage, error);
-
-    return { data: errorMessage };
+    return { data: "Error storing a shopping list: " + error };
   }
 }
 
 async function storeLists(lists) {
   try {
     await AsyncStorage.setItem(key, JSON.stringify(lists));
+    return { ok: true };
   } catch (error) {
-    console.log("Error storing shopping lists", error);
+    return { data: "Error storing shopping lists: " + error };
   }
 }
 
@@ -43,7 +41,7 @@ async function update(updatedList) {
     list.id === updatedList.id ? updatedList : list
   );
 
-  storeLists(updated);
+  return await storeLists(updated);
 }
 
 async function removeList(listId) {

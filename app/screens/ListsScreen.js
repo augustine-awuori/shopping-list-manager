@@ -28,10 +28,10 @@ export default ({ navigation }) => {
     <ListItemAction onPress={() => shoppingLists.remove(list)} />
   );
 
-  const leftAction = (item) => (
+  const leftAction = (list) => (
     <ListItemAction
       name="pencil"
-      onPress={() => navigation.navigate(routes.LIST_EDIT, item)}
+      onPress={() => navigation.navigate(routes.LIST_EDIT, list)}
       style={styles.leftActionItem}
     />
   );

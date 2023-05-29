@@ -2,9 +2,8 @@ import React, { useState } from "react";
 import { StyleSheet } from "react-native";
 import * as Yup from "yup";
 
-import { Form, FormField, FormPicker, SubmitButton } from "../components/forms";
+import { Form, FormField, SubmitButton } from "../components/forms";
 import ActivityIndicator from "../components/ActivityIndicator";
-import CategoryPicker from "../components/CategoryPickerItem";
 import useShoppingListItems from "../hooks/useShoppingListItems";
 
 const validationSchema = Yup.object().shape({
@@ -13,24 +12,6 @@ const validationSchema = Yup.object().shape({
   price: Yup.number().min(1).max(10_000).label("Item Price"),
   quantity: Yup.number().min(1).max(1_000).label("Item Quantity"),
 });
-
-const categories = [
-  {
-    icon: "lamps",
-    backgroundColor: "red",
-    label: "Furniture",
-  },
-  {
-    icon: "home",
-    backgroundColor: "green",
-    label: "Gadget",
-  },
-  {
-    icon: "arrow-down",
-    backgroundColor: "red",
-    label: "Utilities",
-  },
-];
 
 export default ({ navigation, route }) => {
   const { add: addItem, update: updateItem } = useShoppingListItems();
@@ -83,14 +64,6 @@ export default ({ navigation, route }) => {
           placeholder="Price"
           width="50%"
           maxLength={10_000}
-        />
-        <FormPicker
-          icon="apps"
-          items={categories}
-          name="category"
-          numberOfColumns={3}
-          PickerItemComponent={CategoryPicker}
-          placeholder="Category"
         />
         <SubmitButton title={editedItem ? "Edit Item" : "Add Item"} />
       </Form>

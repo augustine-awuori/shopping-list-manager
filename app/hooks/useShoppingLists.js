@@ -38,14 +38,14 @@ export default () => {
       "Shopping List Deletion",
       `Are you sure you want to remove this ${title} permanently?`,
       "I'm sure",
-      async () => await erase(id),
+      () => erase(id),
       "Cancel"
     );
 
-  const erase = async (id) => {
+  const erase = (id) => {
     setShoppingLists([...shoppingLists].filter((list) => id !== list.id));
 
-    await listsStorage.removeList(id);
+    listsStorage.removeList(id);
   };
 
   const remove = (item) => askBeforeRemoval(item);
