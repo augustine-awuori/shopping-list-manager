@@ -8,7 +8,6 @@ import FloatingButton from "../components/FloatingButton";
 import ProgressBar from "../components/ProgressBar";
 import routes from "../navigation/routes";
 import Table from "../components/Table";
-import useAlert from "../hooks/useAlert";
 import useShoppingListItems from "../hooks/useShoppingListItems";
 import useShoppingLists from "../hooks/useShoppingLists";
 
@@ -19,7 +18,6 @@ export default ({ navigation }) => {
   const [checkedAmount, setCheckedAmount] = useState(0);
   const [checkedCount, setCheckedCount] = useState(0);
   const [isShopping, setIsShopping] = useState();
-  const { alert } = useAlert();
   const listItems = useShoppingListItems();
   const { shoppingList } = useShoppingLists();
 
@@ -53,7 +51,6 @@ export default ({ navigation }) => {
   };
 
   const deleteItem = (item) => {
-    listItems.save([...items].filter(({ name }) => name !== item.name));
     listItems.remove(item, listId);
 
     if (item.checked) {
@@ -61,15 +58,6 @@ export default ({ navigation }) => {
       setCheckedCount(checkedCount - 1);
     }
   };
-
-  const handleItemDelete = (item) =>
-    alert(
-      "List Item Deletion",
-      `Are you sure you want to permanently remove "${item.name.toLowerCase()} " from your list?`,
-      "I'm sure",
-      () => deleteItem(item),
-      "Cancel"
-    );
 
   const handleItemEdit = (item) =>
     navigation.navigate(routes.LIST_ITEM_EDIT, { item, ...params });
@@ -107,7 +95,7 @@ export default ({ navigation }) => {
   );
 
   const renderRightActions = (item) => (
-    <ItemAction onPress={() => handleItemDelete(item)} />
+    <ItemAction onPress={() => deleteItem(item)} />
   );
 
   const handleNewItemEdit = () =>
@@ -124,7 +112,7 @@ export default ({ navigation }) => {
         <Table
           data={items}
           isShopping={isShopping}
-          onItemLongPress={handleItemDelete}
+          onItemLongPress={deleteItem}
           onItemPress={handleItemPress}
           renderLeftActions={renderLeftActions}
           renderRightActions={renderRightActions}

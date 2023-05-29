@@ -1,6 +1,9 @@
+import time from "../utility/time";
+import useAlert from "./useAlert";
 import useShoppingLists from "./useShoppingLists";
 
 export default () => {
+  const { alert } = useAlert();
   const lists = useShoppingLists();
 
   const add = async (item, listId) => {
@@ -11,7 +14,29 @@ export default () => {
     await syncList(list);
   };
 
-  const remove = async (item, listId) => {
+  const remove = (item, listId) => askBeforeRemoval(item, listId);
+
+  const askBeforeRemoval = (item, listId) =>
+    alert(
+      "Shopping List Item Deletion!",
+      `Are you sure you want to remove this ${item.name} permanently?`,
+      "I'm sure",
+      async () => await erase(item, listId),
+      "Cancel"
+    );
+
+  const erase = async (item, listId) => {
+    eraseFromState(item);
+    await eraseFromCache(item, listId);
+  };
+
+  const eraseFromState = async (item) => {
+    const items = [...lists.shoppingList.items];
+
+    await save(items.filter(({ name }) => name !== item.name));
+  };
+
+  const eraseFromCache = async (item, listId) => {
     const list = await lists.get(listId);
 
     list.items = list.items.filter(({ id }) => id !== item.id);
@@ -29,14 +54,14 @@ export default () => {
 
   const map = ({ category, name, unitPrice, quantity }) => ({
     category,
-    id: JSON.stringify(new Date()),
+    id: time.now(),
     name,
     unitPrice,
     quantity,
   });
 
   async function syncList(list) {
-    list.lastUpdate = new Date();
+    list.lastUpdate = time.now();
 
     await lists.save(list);
   }

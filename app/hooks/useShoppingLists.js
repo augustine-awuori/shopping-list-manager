@@ -3,9 +3,12 @@ import * as SplashScreen from "expo-splash-screen";
 
 import listsStorage from "../utility/storage";
 import ShoppingListsContext from "../context/ShoppingListsContext";
+import time from "../utility/time";
+import useAlert from "./useAlert";
 
 export default () => {
   const context = useContext(ShoppingListsContext);
+  const { alert } = useAlert();
 
   const setShoppingList = context?.setShoppingList;
   const shoppingList = context?.shoppingList;
@@ -30,11 +33,22 @@ export default () => {
     return await listsStorage.add(mapped);
   };
 
-  const remove = async ({ id }) => {
+  const askBeforeRemoval = ({ id, title }) =>
+    alert(
+      "Shopping List Deletion",
+      `Are you sure you want to remove this ${title} permanently?`,
+      "I'm sure",
+      async () => await erase(id),
+      "Cancel"
+    );
+
+  const erase = async (id) => {
     setShoppingLists([...shoppingLists].filter((list) => id !== list.id));
 
     await listsStorage.removeList(id);
   };
+
+  const remove = (item) => askBeforeRemoval(item);
 
   const get = async (listId) => {
     const lists = await listsStorage.getAll();
@@ -53,7 +67,7 @@ export default () => {
 
   const map = ({ budgetLimit, shoppingCentre, title }) => ({
     budget: budgetLimit,
-    id: JSON.stringify(new Date()),
+    id: time.now(),
     items: [],
     lastUpdate: undefined,
     shoppingCentre,
