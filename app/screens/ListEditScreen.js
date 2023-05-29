@@ -36,7 +36,7 @@ export default ({ navigation, route }) => {
     setError("");
     setLoading(true);
     const { data, ok } = editedList
-      ? await shoppingList.update(list)
+      ? await shoppingList.save({ ...editedList, list })
       : await shoppingList.add(list);
     setLoading(false);
 
@@ -56,7 +56,7 @@ export default ({ navigation, route }) => {
         style={styles.container}
       >
         <ErrorMessage error={error} visible={error} />
-        <FormField name="title" placeholder="Shopping List  Title" />
+        <FormField autoFocus name="title" placeholder="Shopping List  Title" />
         <FormField
           name="shoppingCentre"
           placeholder="Shopping Centre (Optional)"

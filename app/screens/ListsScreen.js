@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { FlatList, StyleSheet } from "react-native";
 
 import { ListItem, ListItemAction } from "../components/lists";
+import ActivityIndicator from "../components/ActivityIndicator";
 import Button from "../components/FloatingButton";
 import colors from "../config/colors";
 import ItemSeparator from "../components/lists/ItemSeparator";
@@ -35,13 +36,14 @@ export default ({ navigation }) => {
     />
   );
 
-  const viewDetails = ({ id, title }) => {
-    shoppingLists.setShoppingListById(id);
-    navigation.navigate(routes.LIST_DETAILS, { title });
+  const viewDetails = (list) => {
+    shoppingLists.setShoppingList(list);
+    navigation.navigate(routes.LIST_DETAILS, list);
   };
 
   return (
     <>
+      <ActivityIndicator visible={refreshing} />
       <FlatList
         data={shoppingLists.data}
         keyExtractor={(item, index) => index.toString()}

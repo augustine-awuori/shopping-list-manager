@@ -1,18 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
-import Icon from "@expo/vector-icons/Feather";
 
-import BlockButton from "../components/BlockButton";
+import { ListItemAction } from "../components/lists";
+import AmountInfo from "../components/ListAmountInfo";
 import colors from "../config/colors";
 import FloatingButton from "../components/FloatingButton";
-import OutlineButton from "../components/BlockOutlineButton";
 import ProgressBar from "../components/ProgressBar";
 import routes from "../navigation/routes";
 import Table from "../components/Table";
-import Text from "../components/Text";
 import useAlert from "../hooks/useAlert";
 import useShoppingListItems from "../hooks/useShoppingListItems";
 import useShoppingLists from "../hooks/useShoppingLists";
+
+const tableHeaders = ["Title", "Unit Price", "Quantity", "Sum"];
 
 export default ({ navigation }) => {
   const [amount, setAmount] = useState(0);
@@ -21,35 +21,29 @@ export default ({ navigation }) => {
   const [isShopping, setIsShopping] = useState();
   const { alert } = useAlert();
   const listItems = useShoppingListItems();
-  const { shoppingList: list, shoppingListItemsCount: itemsCount } =
-    useShoppingLists();
+  const { shoppingList } = useShoppingLists();
 
-  const budgetRemainder = list.budget - amount;
-
-  const tableHeaders = ["Title", "Unit Price", "Quantity", "Sum", ""];
-
-  const items = list?.items;
+  const { items, id: listId, title, lastUpdate } = shoppingList;
+  const itemsCount = items.length;
+  const params = { title, listId };
 
   useEffect(() => {
     initAmount();
-  }, []);
+  }, [lastUpdate]);
 
   const initAmount = () => {
     let amount = 0;
 
-    items.forEach(
-      ({ quantity, unitPrice }) => (amount += quantity * unitPrice)
-    );
+    items.forEach(({ quantity, unitPrice }) => {
+      if (unitPrice) amount += quantity * unitPrice;
+    });
 
     setAmount(amount);
   };
 
   const handleItemPress = (item, index) => {
     if (!isShopping)
-      return navigation.navigate(routes.LIST_ITEM_EDIT, {
-        item,
-        listId: list.id,
-      });
+      return navigation.navigate(routes.LIST_ITEM_EDIT, { item, ...params });
 
     const newItems = [...items];
     newItems[index].checked = !newItems[index].checked;
@@ -59,8 +53,8 @@ export default ({ navigation }) => {
   };
 
   const deleteItem = (item) => {
-    listItems.save([...items].filter(({ id }) => id !== item.id));
-    listItems.remove(item, list.id);
+    listItems.save([...items].filter(({ name }) => name !== item.name));
+    listItems.remove(item, listId);
 
     if (item.checked) {
       setCheckedAmount(amount - item.quantity * item.unitPrice);
@@ -77,6 +71,9 @@ export default ({ navigation }) => {
       "Cancel"
     );
 
+  const handleItemEdit = (item) =>
+    navigation.navigate(routes.LIST_ITEM_EDIT, { item, ...params });
+
   const updateCheckedAmount = ({ checked, unitPrice, quantity }) => {
     let amount = checkedAmount;
     const total = quantity * unitPrice;
@@ -88,9 +85,7 @@ export default ({ navigation }) => {
   const handlePress = () => {
     setIsShopping(!isShopping);
 
-    if (isShopping) {
-      navigation.navigate(routes.LISTS);
-    }
+    if (isShopping) navigation.navigate(routes.LISTS);
   };
 
   const getProgress = () => {
@@ -99,11 +94,24 @@ export default ({ navigation }) => {
     return checkedCount && itemsCount ? progress : 0;
   };
 
-  const Btn = isShopping ? OutlineButton : BlockButton;
+  const ItemAction = ({ ...props }) => (
+    <ListItemAction iconSize={30} style={styles.itemAction} {...props} />
+  );
 
-  const budgetTextStyle = {
-    color: budgetRemainder > 0 ? colors.success : colors.danger,
-  };
+  const renderLeftActions = (item) => (
+    <ItemAction
+      name="pencil"
+      onPress={() => handleItemEdit(item)}
+      style={styles.itemEditIcon}
+    />
+  );
+
+  const renderRightActions = (item) => (
+    <ItemAction onPress={() => handleItemDelete(item)} />
+  );
+
+  const handleNewItemEdit = () =>
+    navigation.navigate(routes.LIST_ITEM_EDIT, shoppingList);
 
   return (
     <>
@@ -114,81 +122,44 @@ export default ({ navigation }) => {
       />
       <View style={styles.container}>
         <Table
-          data={list.items}
+          data={items}
           isShopping={isShopping}
           onItemLongPress={handleItemDelete}
           onItemPress={handleItemPress}
+          renderLeftActions={renderLeftActions}
+          renderRightActions={renderRightActions}
           style={styles.table}
           titles={tableHeaders}
         />
-        {list?.items?.length ? (
-          <>
-            <View style={styles.textContainer}>
-              <Text style={styles.amountText}>Total = {amount}</Text>
-              {list.budget ? (
-                <Text style={budgetTextStyle}>
-                  Budget = {list.budget - amount}
-                </Text>
-              ) : null}
-              {isShopping && checkedAmount ? (
-                <View style={styles.tickedContainer}>
-                  <Icon
-                    color={colors.primary}
-                    name="check-circle"
-                    size={20}
-                    style={styles.icon}
-                  />
-                  <Text style={styles.amountText}>
-                    Ticked = {checkedAmount}
-                  </Text>
-                </View>
-              ) : null}
-            </View>
-            <Btn
-              onPress={handlePress}
-              style={styles.button}
-              title={isShopping ? "Finish Shopping" : "Start Shopping"}
-            />
-          </>
-        ) : null}
-        <FloatingButton
-          onPress={() => navigation.navigate(routes.LIST_ITEM_EDIT, list.id)}
+        <AmountInfo
+          amount={amount}
+          checkedAmount={checkedAmount}
+          isShopping={isShopping}
+          onPress={handlePress}
+          list={shoppingList}
         />
+        <FloatingButton onPress={handleNewItemEdit} />
       </View>
     </>
   );
 };
 
 const styles = StyleSheet.create({
-  amountText: {
-    color: colors.primary,
-    textAlign: "center",
-  },
-  button: {
-    marginTop: 40,
-  },
   container: {
     flex: 1,
     paddingHorizontal: 10,
   },
-  icon: {
-    marginRight: 7,
+  itemAction: {
+    width: 60,
+  },
+  itemEditIcon: {
+    backgroundColor: colors.primary,
   },
   progressBar: {
     marginBottom: 5,
   },
   table: {
     marginBottom: 20,
-  },
-  textContainer: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    marginBottom: 10,
-  },
-  tickedContainer: {
-    alignItems: "center",
-    flexDirection: "row",
-    justifyContent: "center",
   },
   title: {
     color: colors.primary,

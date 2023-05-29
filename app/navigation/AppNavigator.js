@@ -52,10 +52,10 @@ export default () => {
         <Stack.Screen
           component={ListItemEditScreen}
           name={routes.LIST_ITEM_EDIT}
-          options={{
+          options={({ route }) => ({
             animation: "slide_from_bottom",
-            title: "List Item Edit",
-          }}
+            title: route.params.title + " List Item",
+          })}
         />
       </Stack.Navigator>
     </ListsContext.Provider>

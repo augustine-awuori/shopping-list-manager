@@ -25,7 +25,8 @@
     "react-native-paper": "^5.7.2",
     "react-native-tableview-simple": "^4.4.0",
     "uuid": "^9.0.0",
-    "yup": "^1.1.1"
+    "yup": "^1.1.1",
+    "expo-splash-screen": "~0.18.2"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"

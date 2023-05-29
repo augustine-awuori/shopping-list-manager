@@ -1,4 +1,5 @@
 import { useContext, useEffect } from "react";
+import * as SplashScreen from "expo-splash-screen";
 
 import listsStorage from "../utility/storage";
 import ShoppingListsContext from "../context/ShoppingListsContext";
@@ -13,9 +14,13 @@ export default () => {
 
   useEffect(() => {
     init();
-  }, [shoppingList?.items?.length]);
+  }, [shoppingList?.lastUpdate]);
 
-  const init = async () => setShoppingLists(await listsStorage.getAll());
+  const init = async () => {
+    await SplashScreen.preventAutoHideAsync();
+    setShoppingLists(await listsStorage.getAll());
+    await SplashScreen.hideAsync();
+  };
 
   const add = async (list) => {
     const mapped = map(list);
@@ -25,47 +30,43 @@ export default () => {
     return await listsStorage.add(mapped);
   };
 
-  const remove = ({ id }) => {
+  const remove = async ({ id }) => {
     setShoppingLists([...shoppingLists].filter((list) => id !== list.id));
 
-    listsStorage.removeList(id);
+    await listsStorage.removeList(id);
   };
 
-  const update = async (list) => {
-    const mapped = map(list);
+  const get = async (listId) => {
+    const lists = await listsStorage.getAll();
 
-    setShoppingLists(
-      [...shoppingLists].map((l) => (l.title === list.title ? mapped : l))
-    );
-    setShoppingList(mapped);
-
-    return await listsStorage.update(mapped);
+    return lists.find((list) => list.id === listId);
   };
 
-  const getList = (listId) =>
-    [...shoppingLists].find((list) => list.id === listId);
-
-  const save = (list) => {
+  const save = async (list) => {
+    setShoppingList(list);
     setShoppingLists(
-      [...shoppingLists].map((l) => (l.id === list.id ? list : l))
+      [...shoppingLists].map((l) => (l.title === list.title ? list : l))
     );
-    listsStorage.update(list);
+
+    return await listsStorage.update(list);
   };
 
   const map = ({ budgetLimit, shoppingCentre, title }) => ({
-    id: new Date(),
     budget: budgetLimit,
+    id: JSON.stringify(new Date()),
+    items: [],
+    lastUpdate: undefined,
     shoppingCentre,
     title,
-    items: [],
   });
 
-  const setShoppingListById = (listId) => setShoppingList(getList(listId));
+  const setShoppingListById = async (listId) =>
+    setShoppingList(await get(listId));
 
   return {
     add,
     data: shoppingLists,
-    getList,
+    get,
     init,
     remove,
     save,
@@ -73,6 +74,5 @@ export default () => {
     setShoppingListById,
     shoppingList,
     shoppingListItemsCount: shoppingList?.items?.length || 0,
-    update,
   };
 };

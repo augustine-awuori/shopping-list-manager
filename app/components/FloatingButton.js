@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, TouchableOpacity } from "react-native";
+import { StyleSheet, TouchableWithoutFeedback, View } from "react-native";
 import Icon from "@expo/vector-icons/MaterialCommunityIcons";
 
 import colors from "../config/colors";
@@ -13,17 +13,18 @@ export default ({
 }) => {
   if (!visible) return null;
 
+  const buttonStyle = [
+    styles.button,
+    style,
+    { width, height: width, borderRadius: width * 0.5 },
+  ];
+
   return (
-    <TouchableOpacity
-      onPress={onPress}
-      style={[
-        styles.button,
-        style,
-        { width, height: width, borderRadius: width * 0.5 },
-      ]}
-    >
-      <Icon name={icon} color={colors.white} size={width * 0.5} />
-    </TouchableOpacity>
+    <TouchableWithoutFeedback onPress={onPress}>
+      <View style={buttonStyle}>
+        <Icon name={icon} color={colors.white} size={width * 0.5} />
+      </View>
+    </TouchableWithoutFeedback>
   );
 };
 

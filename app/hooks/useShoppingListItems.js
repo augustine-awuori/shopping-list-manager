@@ -3,28 +3,28 @@ import useShoppingLists from "./useShoppingLists";
 export default () => {
   const lists = useShoppingLists();
 
-  const add = (item, listId) => {
-    const list = lists.getList(listId);
+  const add = async (item, listId) => {
+    const list = await lists.get(listId);
 
     list.items.push(map(item));
 
-    syncList(list);
+    await syncList(list);
   };
 
-  const remove = (item, listId) => {
-    const list = lists.getList(listId);
+  const remove = async (item, listId) => {
+    const list = await lists.get(listId);
 
     list.items = list.items.filter(({ id }) => id !== item.id);
 
-    syncList(list);
+    await syncList(list);
   };
 
-  const update = (item, listId) => {
-    const list = lists.getList(listId);
+  const update = async (item, listId) => {
+    const list = await lists.get(listId);
 
-    list.items = list.items.map((l) => (l.id === item.id ? item : l));
+    list.items = list.items.map((i) => (i.id === item.id ? item : i));
 
-    syncList(list);
+    await syncList(list);
   };
 
   const map = ({ category, name, unitPrice, quantity }) => ({
@@ -35,13 +35,14 @@ export default () => {
     quantity,
   });
 
-  function syncList(list) {
-    lists.save(list);
-    lists.setShoppingList(list);
+  async function syncList(list) {
+    list.lastUpdate = new Date();
+
+    await lists.save(list);
   }
 
-  function save(items) {
-    lists.setShoppingList({ ...lists.shoppingList, items });
+  async function save(items) {
+    await syncList({ ...lists.shoppingList, items });
   }
 
   return { add, remove, save, update };

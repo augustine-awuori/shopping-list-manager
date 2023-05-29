@@ -1,14 +1,14 @@
 import React from "react";
 import { View, StyleSheet, TouchableWithoutFeedback } from "react-native";
-import Icons from "@expo/vector-icons/MaterialCommunityIcons";
+import Icon from "@expo/vector-icons/MaterialCommunityIcons";
 
 import colors from "../../config/colors";
 
-function ListItemAction({ name = "trash-can", onPress, style }) {
+function ListItemAction({ name = "trash-can", iconSize = 35, onPress, style }) {
   return (
     <TouchableWithoutFeedback onPress={onPress}>
       <View style={[styles.container, style]}>
-        <Icons name={name} size={35} color={colors.white} />
+        <Icon name={name} size={iconSize} color={colors.white} />
       </View>
     </TouchableWithoutFeedback>
   );
