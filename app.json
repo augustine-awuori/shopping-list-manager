@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "shopping-list-creator",
-    "slug": "shopping-list-creator",
+    "name": "eShoppingLists",
+    "slug": "eShoppingLists",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./app/assets/icon.png",
@@ -9,20 +9,29 @@
     "splash": {
       "image": "./app/assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#f8b500"
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.eshop.my-shopping-lists",
+      "buildNumber": "1.0.0"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./app/assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.augustineawuori.myshoppinglists",
+      "versionCode": 1
     },
     "web": {
       "favicon": "./app/assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "4338af0a-daff-4e24-b952-40a0ce2189e6"
+      }
     }
   }
 }
